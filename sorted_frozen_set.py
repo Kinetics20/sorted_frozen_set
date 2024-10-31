@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from collections.abc import Sequence
 
 
@@ -10,8 +11,14 @@ class SortedFrozenSet(Sequence):
 
 
     def __contains__(self, item):
+        try:
+            self.index(item)
+            return True
+        except ValueError:
+            return False
         # return self._items.__contains__(item)
-        return item in self._items
+        # index = bisect_left(self._items, item)
+        # return (index != len(self._items)) and self._items[index] == item
         # for item_ in self._items:
         #     if item_ == item:
         #         return True
@@ -51,5 +58,18 @@ class SortedFrozenSet(Sequence):
 
     def __repr__(self):
         return f'{type(self).__name__}({list(self._items) or ''})'
+
+    def index(self, item):
+        index = bisect_left(self._items, item)
+        if (index != len(self._items)) and self._items[index] == item:
+            return index
+        raise ValueError(f'{item!r} not found')
+
+
+    def count(self, item):
+        # index = bisect_left(self._items, item)
+        # found = (index != len(self._items)) and self._items[index] == item
+        return int(item in self)
+
 
 
